@@ -145,4 +145,4 @@ Early on, the base URL used to build the `shortUrl` response was hardcoded (`htt
 
 ## Author
 
-Jignesh — [github.com/jigneshrb21](https://github.com/jigneshrb21)
+Jignesh Awasare — [github.com/jigneshrb21](https://github.com/jigneshrb21)

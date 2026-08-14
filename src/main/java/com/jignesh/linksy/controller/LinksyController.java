@@ -1,6 +1,7 @@
 package com.jignesh.linksy.controller;
 
 import com.jignesh.linksy.dto.ShortenRequest;
+import com.jignesh.linksy.dto.UrlResponse;
 import com.jignesh.linksy.service.LinksyService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Value;
@@ -9,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -25,9 +27,14 @@ public class LinksyController {
 
     @PostMapping("/api/shorten")
     public ResponseEntity<Map<String, String>> shortenUrl(@Valid @RequestBody ShortenRequest request) {
-        String shortCode = linksyService.shortenUrl(request.getOriginalUrl());
+        String shortCode = linksyService.shortenUrl(request.getOriginalUrl(), request.getCustomAlias());
         String shortUrl = baseUrl + "/" + shortCode;
         return ResponseEntity.ok(Map.of("shortUrl", shortUrl));
+    }
+
+    @GetMapping("/api/urls")
+    public ResponseEntity<List<UrlResponse>> getAllUrls() {
+        return ResponseEntity.ok(linksyService.getAllUrls());
     }
 
     @GetMapping("/{shortCode}")
@@ -38,3 +45,4 @@ public class LinksyController {
                 .build();
     }
 }
+

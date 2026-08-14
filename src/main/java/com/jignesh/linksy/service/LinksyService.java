@@ -2,6 +2,7 @@ package com.jignesh.linksy.service;
 
 import com.jignesh.linksy.dto.UrlResponse;
 import com.jignesh.linksy.exception.AliasAlreadyExistsException;
+import com.jignesh.linksy.exception.LinkExpiredException;
 import com.jignesh.linksy.exception.ShortCodeNotFoundException;
 import com.jignesh.linksy.model.UrlMapping;
 import com.jignesh.linksy.repository.UrlMappingRepository;
@@ -20,11 +21,12 @@ public class LinksyService {
         this.urlMappingRepository = urlMappingRepository;
     }
 
-    public String shortenUrl(String originalUrl, String customAlias) {
+    public String shortenUrl(String originalUrl, String customAlias, LocalDateTime expiryDate) {
         UrlMapping mapping = new UrlMapping();
         mapping.setOriginalUrl(originalUrl);
         mapping.setCreatedAt(LocalDateTime.now());
         mapping.setClickCount(0L);
+        mapping.setExpiryDate(expiryDate);
 
         if (customAlias != null && !customAlias.isBlank()) {
             if (urlMappingRepository.findByShortCode(customAlias).isPresent()) {
@@ -45,6 +47,10 @@ public class LinksyService {
     public String getOriginalUrl(String shortCode) {
         UrlMapping mapping = urlMappingRepository.findByShortCode(shortCode)
                 .orElseThrow(() -> new ShortCodeNotFoundException(shortCode));
+
+        if (mapping.getExpiryDate() != null && mapping.getExpiryDate().isBefore(LocalDateTime.now())) {
+            throw new LinkExpiredException(shortCode);
+        }
 
         mapping.setClickCount(mapping.getClickCount() + 1);
         urlMappingRepository.save(mapping);

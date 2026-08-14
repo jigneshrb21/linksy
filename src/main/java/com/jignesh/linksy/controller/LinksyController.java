@@ -27,7 +27,7 @@ public class LinksyController {
 
     @PostMapping("/api/shorten")
     public ResponseEntity<Map<String, String>> shortenUrl(@Valid @RequestBody ShortenRequest request) {
-        String shortCode = linksyService.shortenUrl(request.getOriginalUrl(), request.getCustomAlias());
+        String shortCode = linksyService.shortenUrl(request.getOriginalUrl(), request.getCustomAlias(), request.getExpiryDate());
         String shortUrl = baseUrl + "/" + shortCode;
         return ResponseEntity.ok(Map.of("shortUrl", shortUrl));
     }
